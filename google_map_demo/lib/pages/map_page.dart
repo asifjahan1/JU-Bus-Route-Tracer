@@ -92,7 +92,7 @@ class _MapPageState extends State<MapPage> {
       await _fetchAndDisplayPredefinedRoute(entry);
     }
 
-// Display common markers
+    // Display common markers
     _markers.add(Marker(
       markerId: MarkerId("User Start Location"),
       position: widget.userStartLocation,
@@ -110,8 +110,9 @@ class _MapPageState extends State<MapPage> {
       position: endLocation,
     ));
 
-    // Display polylines and markers on the map
-    _displayPolylines();
+    // Display polylines and markers on the map once it's created
+    final GoogleMapController controller = await _controller.future;
+    _displayPolylines(controller);
 
     // previous updated code
     // for (var entry in predefinedStartLocations.entries) {
@@ -144,7 +145,7 @@ class _MapPageState extends State<MapPage> {
     await Future.wait(predefinedRouteFutures);
 
     // Display polylines and markers on the map
-    _displayPolylines();
+    //_displayPolylines();
   }
 
   // New method to handle the fetching and displaying of each predefined route
@@ -179,7 +180,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> _displayPolylines() async {
+  Future<void> _displayPolylines(GoogleMapController controller) async {
     // Display user's route
     _polylines.add(
       Polyline(
@@ -191,36 +192,42 @@ class _MapPageState extends State<MapPage> {
           int userEstimatedDuration =
               await _calculateETA(widget.userStartLocation, endLocation);
           _showETAMessage(
-              calculateDistance(widget.userStartLocation, endLocation),
-              userEstimatedDuration);
+            calculateDistance(widget.userStartLocation, endLocation),
+            userEstimatedDuration,
+            'User_Route-JU',
+          );
         },
       ),
     );
 
     // Display predefined routes
-    predefinedPolylines.forEach((routeName, points) async {
+    await Future.forEach(predefinedPolylines.entries, (entry) async {
       int predefinedEstimatedDuration =
-          await _calculateETA(points.first, endLocation);
+          await _calculateETA(entry.value.first, endLocation);
+
       _polylines.add(
         Polyline(
-          polylineId: PolylineId('$routeName'),
-          points: points,
-          color: _getRouteColor(routeName), // Define a method to get color
+          polylineId: PolylineId(entry.key),
+          points: entry.value,
+          color: _getRouteColor(entry.key), // Define a method to get color
           width: 4,
           onTap: () async {
-            _showETAMessage(calculateDistance(points.first, endLocation),
-                predefinedEstimatedDuration);
+            _showETAMessage(
+              calculateDistance(entry.value.first, endLocation),
+              predefinedEstimatedDuration,
+              entry.key,
+            );
           },
         ),
       );
 
       _markers.add(Marker(
-        markerId: MarkerId("$routeName Start Location"),
-        position: points.first,
-        icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerColor(routeName)),
+        markerId: MarkerId("${entry.key} Start Location"),
+        position: entry.value.first,
+        icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerColor(entry.key)),
         infoWindow: InfoWindow(
           title:
-              '$routeName Distance: ${calculateDistance(points.first, endLocation)} km',
+              '${entry.key} Distance: ${calculateDistance(entry.value.first, endLocation).toStringAsFixed(2)} km',
           snippet: 'ETA: ${_formatDuration(predefinedEstimatedDuration)}',
         ),
       ));
@@ -233,7 +240,7 @@ class _MapPageState extends State<MapPage> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       infoWindow: InfoWindow(
         title:
-            'User_Route-JU Distance: ${calculateDistance(widget.userStartLocation, endLocation)} km',
+            'User_Route-JU Distance: ${calculateDistance(widget.userStartLocation, endLocation).toStringAsFixed(2)} km',
         snippet:
             'ETA: ${_formatDuration(await _calculateETA(widget.userStartLocation, endLocation))}',
       ),
@@ -243,6 +250,17 @@ class _MapPageState extends State<MapPage> {
       markerId: MarkerId("End point location"),
       position: endLocation,
     ));
+
+    // Show the user's infoWindow without clicking the marker
+    //controller.showMarkerInfoWindow(MarkerId("User Start Location"));
+
+    // Animate the camera position to the user's location after a delay
+    Future.delayed(Duration(milliseconds: 100), () async {
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(
+        CameraUpdate.newLatLng(widget.userStartLocation),
+      );
+    });
 
     setState(() {});
   }
@@ -260,7 +278,7 @@ class _MapPageState extends State<MapPage> {
   // }
   //
   //
-  void _showETAMessage(double distance, int estimatedDuration) {
+  void _showETAMessage(double distance, int estimatedDuration, String s) {
     if (distance.isNaN) {
       // Handle the case where distance is NaN
       distance = 0.0;
@@ -361,6 +379,7 @@ class _MapPageState extends State<MapPage> {
         markers: _markers,
         onMapCreated: (mapController) {
           _controller.complete(mapController);
+          _displayPolylines(mapController);
         },
         polylines: _polylines,
       ),
