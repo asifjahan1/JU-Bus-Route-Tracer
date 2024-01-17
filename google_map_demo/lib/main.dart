@@ -1,39 +1,118 @@
+// import 'package:flutter/material.dart';
+// import 'package:google_map_demo/pages/registration_page.dart';
+
+// void main() {
+//   // WidgetsFlutterBinding.ensureInitialized();
+//   // await Firebase.initializeApp(
+//   //     /*
+//   //     name: "demo",
+//   //     options: FirebaseOptions(
+//   //       apiKey: "AIzaSyC9W1rv3Db_A9TcnpyVlzBsngdCQHuiFlU",
+//   //       appId: "1:531572016920:android:e35b37d59f8af589fe806d",
+//   //       messagingSenderId: "531572016920",
+//   //       projectId: "fir-cfdec",
+//   //       databaseURL:
+//   //           "https://fir-cfdec-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+//   //     )
+//   //     */
+
+//   //     //eitar niche theke sobgulai final options
+//   //     // name: "Google-Map-Demo",
+//   //     // options: FirebaseOptions(
+//   //     //   apiKey:
+//   //     //       "AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA", //new api key genrated on 12012024
+//   //     //   appId:
+//   //     //       "1:954100295518:android:b77f999046b54a0472d1cf", //new aap id from json
+//   //     //   messagingSenderId: "954100295518", //new sender id
+//   //     //   projectId: "map-demo-c4c2c", //new project ID
+//   //     //   databaseURL:
+//   //     //       "https://map-demo-c4c2c-default-rtdb.asia-southeast1.firebasedatabase.app/", //new databaseUrl created in 13012024
+//   //     // ),
+//   //     );
+//   runApp(MyApp());
+// }
+
+// // @override
+// //   void initState() {
+// //     super.initState();
+// //     Firebase.initializeApp().whenComplete(() {
+// //       print("completed");
+// //       setState(() {});
+// //     });
+// //   }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       //initialRoute: splashRoute,
+//       //routes: routes,
+//       title: 'Google Map Demo',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(
+//           seedColor: Colors.deepPurple,
+//         ),
+//         useMaterial3: true,
+//       ),
+//       //home: welcomeScreen(),
+//       home: RegistrationPage(),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
-import 'package:google_map_demo/pages/map_page.dart';
+import 'package:google_map_demo/pages/welcome_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Google Map Demo',
+      title: 'JU Bus Route Tracer',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
         useMaterial3: true,
       ),
-      home: MapPage(),
+      //initialRoute: splashScreen(),
+      home: const welcomeScreen(),
     );
   }
 }
+
+// class RegistrationPage extends StatefulWidget {
+//   @override
+//   _RegistrationPageState createState() => _RegistrationPageState();
+// }
+
+// class _RegistrationPageState extends State<RegistrationPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Registration Page'),
+//       ),
+//       body: Center(
+//         child: ElevatedButton(
+//           onPressed: () {
+//             // Trigger the directions API request when the button is pressed
+//             DirectionsService().getDirections();
+//           },
+//           child: Text('Get Directions'),
+//         ),
+//       ),
+//     );
+//   }
+// }

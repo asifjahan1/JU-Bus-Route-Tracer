@@ -1,12 +1,15 @@
 import 'dart:async';
-
+import 'dart:math' show atan2, cos, pi, sin, sqrt;
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  final LatLng userStartLocation;
+
+  MapPage({Key? key, required this.userStartLocation}) : super(key: key);
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -16,104 +19,350 @@ class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
-
-  Location currentLocation = Location();
-  LocationData? currentLocationData; // Declare as nullable
-
+  List<LatLng> userPolylineCoordinates = [];
+  Map<String, List<LatLng>> predefinedPolylines = {};
   Set<Marker> _markers = {};
+  Set<Polyline> _polylines = {};
+  LatLng endLocation = LatLng(23.8799, 90.2727);
 
-  LatLng startLocation = LatLng(23.7154657,
-      90.4178501); //My coordinates // Replace with your start location
-  LatLng endLocation = LatLng(
-      23.8799, 90.2727); //JU coordinates // Replace with your end location
+  double calculateDistance(LatLng start, LatLng end) {
+    const double radius = 6371.0; // Earth radius
+    double lat1 = start.latitude;
+    double lon1 = start.longitude;
+    double lat2 = end.latitude;
+    double lon2 = end.longitude;
+
+    double dLat = _toRadians(lat2 - lat1);
+    double dLon = _toRadians(lon2 - lon1);
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return radius * c;
+  }
+
+  double _toRadians(double degrees) {
+    return degrees * (pi / 180.0);
+  }
 
   @override
   void initState() {
     super.initState();
-    _getLocation(); // Call the function to get the location
     _getPolyline();
   }
 
-  Future<void> _getLocation() async {
-    currentLocationData = await currentLocation.getLocation();
-    // Handle the case where currentLocationData is still null
-    if (currentLocationData != null) {
-      _updateMarkers();
-    }
-
-    currentLocation.onLocationChanged.listen((LocationData loc) {
-      _controller.future.then((controller) {
-        controller.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
-            zoom: 14,
-          ),
-        ));
-      });
-
-      print(loc.latitude);
-      print(loc.longitude);
-      setState(() {
-        _updateMarkers();
-      });
-    });
-  }
-
-  void _updateMarkers() {
-    _markers.clear();
-    _markers.add(Marker(
-      markerId: const MarkerId('CurrentLocation'),
-      position: LatLng(
-          currentLocationData!.latitude!, currentLocationData!.longitude!),
-    ));
-    _markers.add(Marker(
-      markerId: const MarkerId("Staring point location "),
-      position: startLocation,
-    ));
-    _markers.add(Marker(
-      markerId: const MarkerId("End point location "),
-      position: endLocation,
-    ));
-  }
-
   Future<void> _getPolyline() async {
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA", // Replace with your Google Map Key
-      PointLatLng(startLocation.latitude, startLocation.longitude),
+    const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
+
+    // User's route
+    PolylineResult userResult =
+        await PolylinePoints().getRouteBetweenCoordinates(
+      apiKey,
+      PointLatLng(widget.userStartLocation.latitude,
+          widget.userStartLocation.longitude),
       PointLatLng(endLocation.latitude, endLocation.longitude),
     );
 
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      }
-      setState(() {});
+    if (userResult.points.isNotEmpty) {
+      userPolylineCoordinates = userResult.points
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+    } else {
+      print("Polyline API response error for User's route");
     }
+
+    // Predefined routes
+    Map<String, LatLng> predefinedStartLocations = {
+      'Motijheel-JU': LatLng(23.726566, 90.421664),
+      'khamarbari-JU': LatLng(23.758978, 90.383947),
+      'Airport-JU': LatLng(23.851625, 90.408069),
+      'Jigatala-JU': LatLng(23.739274, 90.375380),
+      // Add more predefined routes as needed
+    };
+
+    List<Future<void>> predefinedRouteFutures = [];
+
+    //New updated code
+    // Inside the _getPolyline method
+    for (var entry in predefinedStartLocations.entries) {
+      await _fetchAndDisplayPredefinedRoute(entry);
+    }
+
+// Display common markers
+    _markers.add(Marker(
+      markerId: MarkerId("User Start Location"),
+      position: widget.userStartLocation,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      infoWindow: InfoWindow(
+        title:
+            'User_Route-JU Distance: ${calculateDistance(widget.userStartLocation, endLocation)} km',
+        snippet:
+            'ETA: ${_formatDuration(await _calculateETA(widget.userStartLocation, endLocation))}',
+      ),
+    ));
+
+    _markers.add(Marker(
+      markerId: MarkerId("End point location"),
+      position: endLocation,
+    ));
+
+    // Display polylines and markers on the map
+    _displayPolylines();
+
+    // previous updated code
+    // for (var entry in predefinedStartLocations.entries) {
+    //   Future<void> fetchRoute() async {
+    //     PolylineResult predefinedResult =
+    //         await PolylinePoints().getRouteBetweenCoordinates(
+    //       apiKey,
+    //       PointLatLng(entry.value.latitude, entry.value.longitude),
+    //       PointLatLng(endLocation.latitude, endLocation.longitude),
+    //     );
+
+    //     if (predefinedResult.points.isNotEmpty) {
+    //       predefinedPolylines[entry.key] = predefinedResult.points
+    //           .map((point) => LatLng(point.latitude, point.longitude))
+    //           .toList();
+    //     } else {
+    //       print("Polyline API response error for ${entry.key}");
+    //       // Provide a default value (e.g., a straight line) if points are empty
+    //       predefinedPolylines[entry.key] = [
+    //         entry.value,
+    //         endLocation,
+    //       ];
+    //     }
+    //   }
+
+    //   predefinedRouteFutures.add(fetchRoute());
+    // }
+
+    // Wait for all predefined routes to complete
+    await Future.wait(predefinedRouteFutures);
+
+    // Display polylines and markers on the map
+    _displayPolylines();
+  }
+
+  // New method to handle the fetching and displaying of each predefined route
+  Future<void> _fetchAndDisplayPredefinedRoute(
+      MapEntry<String, LatLng> entry) async {
+    await Future.delayed(
+      Duration(
+        milliseconds: 100,
+      ),
+    ); // Add a delay of 100 milisecond
+
+    const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
+
+    PolylineResult predefinedResult =
+        await PolylinePoints().getRouteBetweenCoordinates(
+      apiKey,
+      PointLatLng(entry.value.latitude, entry.value.longitude),
+      PointLatLng(endLocation.latitude, endLocation.longitude),
+    );
+
+    if (predefinedResult.points.isNotEmpty) {
+      predefinedPolylines[entry.key] = predefinedResult.points
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+    } else {
+      print("Polyline API response error for ${entry.key}");
+      // Provide a default value (e.g., a straight line) if points are empty
+      predefinedPolylines[entry.key] = [
+        entry.value,
+        endLocation,
+      ];
+    }
+  }
+
+  Future<void> _displayPolylines() async {
+    // Display user's route
+    _polylines.add(
+      Polyline(
+        polylineId: PolylineId('user_route'),
+        points: userPolylineCoordinates,
+        color: Colors.red,
+        width: 7,
+        onTap: () async {
+          int userEstimatedDuration =
+              await _calculateETA(widget.userStartLocation, endLocation);
+          _showETAMessage(
+              calculateDistance(widget.userStartLocation, endLocation),
+              userEstimatedDuration);
+        },
+      ),
+    );
+
+    // Display predefined routes
+    predefinedPolylines.forEach((routeName, points) async {
+      int predefinedEstimatedDuration =
+          await _calculateETA(points.first, endLocation);
+      _polylines.add(
+        Polyline(
+          polylineId: PolylineId('$routeName'),
+          points: points,
+          color: _getRouteColor(routeName), // Define a method to get color
+          width: 4,
+          onTap: () async {
+            _showETAMessage(calculateDistance(points.first, endLocation),
+                predefinedEstimatedDuration);
+          },
+        ),
+      );
+
+      _markers.add(Marker(
+        markerId: MarkerId("$routeName Start Location"),
+        position: points.first,
+        icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerColor(routeName)),
+        infoWindow: InfoWindow(
+          title:
+              '$routeName Distance: ${calculateDistance(points.first, endLocation)} km',
+          snippet: 'ETA: ${_formatDuration(predefinedEstimatedDuration)}',
+        ),
+      ));
+    });
+
+    // Display common markers
+    _markers.add(Marker(
+      markerId: MarkerId("User Start Location"),
+      position: widget.userStartLocation,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      infoWindow: InfoWindow(
+        title:
+            'User_Route-JU Distance: ${calculateDistance(widget.userStartLocation, endLocation)} km',
+        snippet:
+            'ETA: ${_formatDuration(await _calculateETA(widget.userStartLocation, endLocation))}',
+      ),
+    ));
+
+    _markers.add(Marker(
+      markerId: MarkerId("End point location"),
+      position: endLocation,
+    ));
+
+    setState(() {});
+  }
+
+  // void _showETAMessage(double distance, int estimatedDuration) {
+  //   final formattedDistance = distance.toStringAsFixed(3);
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(
+  //         'Distance: $formattedDistance km\nETA: ${_formatDuration(estimatedDuration)}',
+  //         //'Distance: $distance km\nETA: ${_formatDuration(estimatedDuration)}',
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  //
+  void _showETAMessage(double distance, int estimatedDuration) {
+    if (distance.isNaN) {
+      // Handle the case where distance is NaN
+      distance = 0.0;
+    }
+
+    final formattedDistance =
+        distance.toStringAsFixed(2); // Displaying with 2 decimal places
+    final formattedDuration = _formatDuration(estimatedDuration);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: RichText(
+          text: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: [
+              TextSpan(text: 'Distance: $formattedDistance km\n'),
+              TextSpan(text: 'ETA: $formattedDuration'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDuration(int seconds) {
+    final Duration duration = Duration(seconds: seconds);
+
+    if (duration.inHours > 0) {
+      return '${duration.inHours} hr ${duration.inMinutes.remainder(60)} min ${duration.inSeconds.remainder(60)} sec';
+    } else {
+      return '${duration.inMinutes} min ${(duration.inSeconds % 60)} sec';
+    }
+  }
+
+  Future<int> getETA(LatLng startLocation, LatLng endLocation) async {
+    final apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
+    final apiUrl = Uri.parse(
+      'https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${endLocation.latitude},${endLocation.longitude}&key=$apiKey',
+    );
+
+    final response = await http.get(apiUrl);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final durationInSeconds =
+          data['routes'][0]['legs'][0]['duration']['value'];
+      return durationInSeconds;
+    } else {
+      throw Exception('Failed to load ETA');
+    }
+  }
+
+  Future<int> _calculateETA(LatLng startLocation, LatLng endLocation) async {
+    int durationInSeconds = await getETA(startLocation, endLocation);
+    return durationInSeconds;
+  }
+
+  //Get the routes colors
+  Color _getRouteColor(String routeName) {
+    if (routeName == 'Motijheel-JU') {
+      return Colors.blue;
+    } else if (routeName == 'Khamarbari-JU') {
+      return Colors.green;
+    } else if (routeName == 'Airport-JU') {
+      return Colors.pink;
+    } else if (routeName == 'Jigatala-JU') {
+      return Colors.deepPurple;
+    }
+
+    // Add more route colors as needed
+    return Colors.deepOrange;
+  }
+
+  // Get the markers colors
+  double _getMarkerColor(String routeName) {
+    if (routeName == 'Motijheel-JU') {
+      return BitmapDescriptor.hueBlue;
+    } else if (routeName == 'Khamarbari-JU') {
+      return BitmapDescriptor.hueGreen;
+    } else if (routeName == 'Airport-JU') {
+      return BitmapDescriptor.hueRose;
+    } else if (routeName == 'Jigatala-JU') {
+      return BitmapDescriptor.hueViolet;
+    }
+    // Add more marker colors as needed
+    return BitmapDescriptor.hueOrange;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
+        mapType: MapType.hybrid,
         initialCameraPosition: CameraPosition(
-          target: LatLng(currentLocationData?.latitude ?? 0.0,
-              currentLocationData?.longitude ?? 0.0),
-          zoom: 13.5,
+          target: widget.userStartLocation,
+          zoom: 14,
         ),
         markers: _markers,
         onMapCreated: (mapController) {
           _controller.complete(mapController);
         },
-        polylines: {
-          Polyline(
-            polylineId: const PolylineId("track"),
-            points: polylineCoordinates,
-            color: const Color(0xFFFF0000),
-            width: 4,
-          ),
-        },
+        polylines: _polylines,
       ),
     );
   }

@@ -6,7 +6,8 @@
     <application
         android:label="google_map_demo"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA"/>
         <activity
