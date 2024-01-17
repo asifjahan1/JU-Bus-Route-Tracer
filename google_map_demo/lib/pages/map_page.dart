@@ -48,7 +48,7 @@ class _MapPageState extends State<MapPage> {
         controller.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
-            zoom: 13.5,
+            zoom: 14,
           ),
         ));
       });
@@ -80,7 +80,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _getPolyline() async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyC6Six1vrVBXKGb9YUYsOVDddjsm7tpmoM", // Replace with your Google Map Key
+      "AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA", // Replace with your Google Map Key
       PointLatLng(startLocation.latitude, startLocation.longitude),
       PointLatLng(endLocation.latitude, endLocation.longitude),
     );
