@@ -20,6 +20,9 @@ class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  // Use a Geolocator instance
+  final Geolocator _geolocator = Geolocator();
+
   List<LatLng> userPolylineCoordinates = [];
   Map<String, List<LatLng>> predefinedPolylines = {};
   Set<Marker> _markers = {};
@@ -271,29 +274,55 @@ class _MapPageState extends State<MapPage> {
     ));
   }
 
+  // Update user location instantly when clicking the floating action button
+  bool _isUpdatingLocation = false;
+  MarkerId userLocationMarkerId = MarkerId("Updated Location");
+
   Future<void> _updateUserLocation() async {
+    if (_isUpdatingLocation) return;
+
+    _isUpdatingLocation = true;
+
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     LatLng newLocation = LatLng(position.latitude, position.longitude);
 
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(
-      CameraUpdate.newLatLng(newLocation),
+      CameraUpdate.newLatLngZoom(newLocation, 16.0),
     );
 
-    // Optionally, you can clear existing markers and add a new one
-    _markers.clear();
-    _markers.add(Marker(
-      markerId: MarkerId("Updated Location"),
-      position: newLocation,
-      icon: BitmapDescriptor.defaultMarker,
-      onTap: () {
-        // Handle marker tap (if needed)
-      },
-    ));
+    // Calculate distance and ETA
+    double distance = calculateDistance(newLocation, endLocation);
+    int estimatedDuration = await _calculateETA(newLocation, endLocation);
+
+    // Find the user location marker
+    Marker userLocationMarker = _markers.firstWhere(
+      (marker) => marker.markerId == MarkerId("Updated Location"),
+      orElse: () => Marker(markerId: MarkerId("Updated Location")),
+    );
+
+    // Update the position and infoWindow of the user location marker
+    userLocationMarker = userLocationMarker.copyWith(
+      positionParam: newLocation,
+      infoWindowParam: InfoWindow(
+        title: 'User_Route-JU Distance: ${distance.toStringAsFixed(2)} km',
+        snippet: 'ETA: ${_formatDuration(estimatedDuration)}',
+      ),
+    );
+
+    // Update the user location marker in the set of markers
+    _markers.removeWhere(
+        (marker) => marker.markerId == MarkerId("Updated Location"));
+    _markers.add(userLocationMarker);
 
     setState(() {});
+
+    // Allow updating location again after a delay (e.g., 2 seconds)
+    await Future.delayed(const Duration(milliseconds: 100));
+    _isUpdatingLocation = false;
   }
 
   // void _showETAMessage(double distance, int estimatedDuration) {
@@ -309,6 +338,7 @@ class _MapPageState extends State<MapPage> {
   // }
   //
   //
+
   void _showETAMessage(double distance, int estimatedDuration, String s) {
     if (distance.isNaN) {
       // Handle the case where distance is NaN
@@ -400,38 +430,84 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Flexible(
-          child: Scaffold(
-            body: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                double mapHeight = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Column(
+        children: [
+          Flexible(
+            child: Scaffold(
+              body: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  double mapHeight = MediaQuery.of(context).size.height;
 
-                return SizedBox(
-                  height: mapHeight,
-                  child: GoogleMap(
-                    mapType: MapType.hybrid,
-                    initialCameraPosition: CameraPosition(
-                      target: widget.userStartLocation,
-                      zoom: 14,
-                    ),
-                    markers: _markers,
-                    onMapCreated: (mapController) {
-                      if (!_controller.isCompleted) {
-                        _controller.complete(mapController);
-                        _displayPolylines(mapController);
-                      }
-                    },
-                    polylines: _polylines,
-                  ),
-                );
-              },
+                  return Stack(
+                    children: [
+                      SizedBox(
+                        height: mapHeight,
+                        child: GoogleMap(
+                          mapType: MapType.hybrid,
+                          initialCameraPosition: CameraPosition(
+                            target: widget.userStartLocation,
+                            zoom: 14,
+                          ),
+                          markers: _markers,
+                          onMapCreated: (mapController) {
+                            if (!_controller.isCompleted) {
+                              _controller.complete(mapController);
+                              _displayPolylines(mapController);
+                            }
+                          },
+                          polylines: _polylines,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 100.0,
+                        right: 10.0,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white.withOpacity(0.9),
+                          onPressed: _updateUserLocation,
+                          child: Icon(Icons.my_location, color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
-        ),
-        // Add other widgets below if needed
-      ],
+          // Add other widgets below if needed
+        ],
+      ),
     );
+  }
+
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            //backgroundColor: Colors.white.withOpacity(0.5),
+            title: Text(
+              'Exit the Map?',
+              style: TextStyle(color: Colors.green),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'No',
+                  style: TextStyle(color: Colors.black, fontSize: 20),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.red, fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }
