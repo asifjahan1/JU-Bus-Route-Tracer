@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' show atan2, cos, pi, sin, sqrt;
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -204,33 +205,8 @@ class _MapPageState extends State<MapPage> {
     await Future.forEach(predefinedPolylines.entries, (entry) async {
       int predefinedEstimatedDuration =
           await _calculateETA(entry.value.first, endLocation);
-
-      _polylines.add(
-        Polyline(
-          polylineId: PolylineId(entry.key),
-          points: entry.value,
-          color: _getRouteColor(entry.key), // Define a method to get color
-          width: 4,
-          onTap: () async {
-            _showETAMessage(
-              calculateDistance(entry.value.first, endLocation),
-              predefinedEstimatedDuration,
-              entry.key,
-            );
-          },
-        ),
-      );
-
-      _markers.add(Marker(
-        markerId: MarkerId("${entry.key} Start Location"),
-        position: entry.value.first,
-        icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerColor(entry.key)),
-        infoWindow: InfoWindow(
-          title:
-              '${entry.key} Distance: ${calculateDistance(entry.value.first, endLocation).toStringAsFixed(2)} km',
-          snippet: 'ETA: ${_formatDuration(predefinedEstimatedDuration)}',
-        ),
-      ));
+      await _displayPredefinedRoute(
+          entry.key, entry.value, controller, predefinedEstimatedDuration);
     });
 
     // Display common markers
@@ -261,6 +237,61 @@ class _MapPageState extends State<MapPage> {
         CameraUpdate.newLatLng(widget.userStartLocation),
       );
     });
+
+    setState(() {});
+  }
+
+  Future<void> _displayPredefinedRoute(String routeKey, List<LatLng> routeValue,
+      GoogleMapController controller, int predefinedEstimatedDuration) async {
+    _polylines.add(
+      Polyline(
+        polylineId: PolylineId(routeKey),
+        points: routeValue,
+        color: _getRouteColor(routeKey),
+        width: 4,
+        onTap: () async {
+          _showETAMessage(
+            calculateDistance(routeValue.first, endLocation),
+            predefinedEstimatedDuration,
+            routeKey,
+          );
+        },
+      ),
+    );
+
+    _markers.add(Marker(
+      markerId: MarkerId("$routeKey Start Location"),
+      position: routeValue.first,
+      icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerColor(routeKey)),
+      infoWindow: InfoWindow(
+        title:
+            '$routeKey Distance: ${calculateDistance(routeValue.first, endLocation).toStringAsFixed(2)} km',
+        snippet: 'ETA: ${_formatDuration(predefinedEstimatedDuration)}',
+      ),
+    ));
+  }
+
+  Future<void> _updateUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    LatLng newLocation = LatLng(position.latitude, position.longitude);
+
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(
+      CameraUpdate.newLatLng(newLocation),
+    );
+
+    // Optionally, you can clear existing markers and add a new one
+    _markers.clear();
+    _markers.add(Marker(
+      markerId: MarkerId("Updated Location"),
+      position: newLocation,
+      icon: BitmapDescriptor.defaultMarker,
+      onTap: () {
+        // Handle marker tap (if needed)
+      },
+    ));
 
     setState(() {});
   }
@@ -369,20 +400,38 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: CameraPosition(
-          target: widget.userStartLocation,
-          zoom: 14,
+    return Column(
+      children: [
+        Flexible(
+          child: Scaffold(
+            body: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                double mapHeight = MediaQuery.of(context).size.height;
+
+                return SizedBox(
+                  height: mapHeight,
+                  child: GoogleMap(
+                    mapType: MapType.hybrid,
+                    initialCameraPosition: CameraPosition(
+                      target: widget.userStartLocation,
+                      zoom: 14,
+                    ),
+                    markers: _markers,
+                    onMapCreated: (mapController) {
+                      if (!_controller.isCompleted) {
+                        _controller.complete(mapController);
+                        _displayPolylines(mapController);
+                      }
+                    },
+                    polylines: _polylines,
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-        markers: _markers,
-        onMapCreated: (mapController) {
-          _controller.complete(mapController);
-          _displayPolylines(mapController);
-        },
-        polylines: _polylines,
-      ),
+        // Add other widgets below if needed
+      ],
     );
   }
 }
