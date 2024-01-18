@@ -1,7 +1,5 @@
 # JU-Bus-Route-Tracer
 
-# Title: Route Planner App with Real-Time Location Tracking
-
 # <span style="font-size:larger;">Screenshots</span>
   <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/ced67693-a3ba-491d-85fb-b512e62a07df"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/499d239f-77fa-4df0-870b-095a97ccb272"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/d72b4219-10aa-4e7e-9ab3-a0a7dd534196"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/b70ef2e4-56a0-4e2e-85c7-f048bb52c474"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/fbf488b0-65fb-4547-90c8-cd6142ae5cdb">
 
