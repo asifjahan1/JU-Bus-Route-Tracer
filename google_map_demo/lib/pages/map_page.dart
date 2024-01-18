@@ -316,7 +316,7 @@ class _MapPageState extends State<MapPage> {
     // Update the user location marker in the set of markers
     _markers.removeWhere(
         (marker) => marker.markerId == MarkerId("Updated Location"));
-    _markers.add(userLocationMarker);
+    //_markers.add(userLocationMarker); //eita off korar pore amar current location er moddhe arekta marker add hobe na.
 
     setState(() {});
 
