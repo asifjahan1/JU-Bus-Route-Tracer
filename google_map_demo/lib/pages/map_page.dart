@@ -300,8 +300,9 @@ class _MapPageState extends State<MapPage> {
 
     // Find the user location marker
     Marker userLocationMarker = _markers.firstWhere(
-      (marker) => marker.markerId == MarkerId("Updated Location"),
-      orElse: () => Marker(markerId: MarkerId("Updated Location")),
+      (marker) => marker.markerId == const MarkerId("Updated Location"),
+      orElse: () =>
+          const Marker(markerId: MarkerId("Updated Location"), visible: true),
     );
 
     // Update the position and infoWindow of the user location marker
@@ -375,7 +376,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<int> getETA(LatLng startLocation, LatLng endLocation) async {
-    final apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
+    const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
     final apiUrl = Uri.parse(
       'https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${endLocation.latitude},${endLocation.longitude}&key=$apiKey',
     );
@@ -430,6 +431,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Column(
