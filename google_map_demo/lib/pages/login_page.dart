@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_map_demo/pages/auth_service.dart';
 import 'package:google_map_demo/pages/map_page.dart';
 import 'package:google_map_demo/pages/registration_page.dart';
+import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => RegistrationPage()));
+                MaterialPageRoute(builder: (context) => const welcomeScreen()));
           },
         ),
       ),
