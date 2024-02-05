@@ -115,6 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                       if (success) {
                         LocationData? currentLocation = await _fetchLocation();
 
+                        //Navigator.pushReplacementNamed(context, '/map');
+
                         if (currentLocation != null) {
                           Navigator.pushReplacement(
                             context,
@@ -142,9 +144,10 @@ class _LoginPageState extends State<LoginPage> {
                       "Login",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
