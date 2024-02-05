@@ -67,7 +67,11 @@
 
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_map_demo/pages/map_page.dart';
+import 'package:google_map_demo/pages/profile_page.dart';
+import 'package:google_map_demo/pages/schedule_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Future<void> main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -90,7 +94,16 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //initialRoute: splashScreen(),
-      home: const welcomeScreen(),
+      // home: const welcomeScreen(),
+      initialRoute: '/', // Set initial route to '/'
+      routes: {
+        '/': (context) => welcomeScreen(), // Define route for welcome screen
+        '/map': (context) => MapPage(
+            userStartLocation: LatLng(0.0, 0.0)), // Define route for map page
+        '/schedule': (context) =>
+            SchedulePage(), // Define route for SchedulePage
+        '/profile': (context) => ProfilePage(), // Define route for ProfilePage
+      },
     );
   }
 }

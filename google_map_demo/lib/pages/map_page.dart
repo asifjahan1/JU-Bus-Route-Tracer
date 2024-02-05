@@ -17,6 +17,20 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text('Map'), // Example widget for the first tab
+    Text('Schedule'), // Example widget for the second tab
+    Text('Profile'), // Example widget for the third tab
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -27,7 +41,7 @@ class _MapPageState extends State<MapPage> {
   Map<String, List<LatLng>> predefinedPolylines = {};
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
-  LatLng endLocation = LatLng(23.8799, 90.2727);
+  LatLng endLocation = const LatLng(23.8799, 90.2727);
 
   double calculateDistance(LatLng start, LatLng end) {
     const double radius = 6371.0; // Earth radius
@@ -81,10 +95,10 @@ class _MapPageState extends State<MapPage> {
 
     // Predefined routes
     Map<String, LatLng> predefinedStartLocations = {
-      'Motijheel-JU': LatLng(23.726566, 90.421664),
-      'khamarbari-JU': LatLng(23.758978, 90.383947),
-      'Airport-JU': LatLng(23.851625, 90.408069),
-      'Jigatala-JU': LatLng(23.739274, 90.375380),
+      'Motijheel-JU': const LatLng(23.726566, 90.421664),
+      'khamarbari-JU': const LatLng(23.758978, 90.383947),
+      'Airport-JU': const LatLng(23.851625, 90.408069),
+      'Jigatala-JU': const LatLng(23.739274, 90.375380),
       // Add more predefined routes as needed
     };
 
@@ -434,51 +448,105 @@ class _MapPageState extends State<MapPage> {
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Column(
-        children: [
-          Flexible(
-            child: Scaffold(
-              body: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  double mapHeight = MediaQuery.of(context).size.height;
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                Flexible(
+                  child: LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      double mapHeight = MediaQuery.of(context).size.height;
 
-                  return Stack(
-                    children: [
-                      SizedBox(
+                      return SizedBox(
                         height: mapHeight,
-                        child: GoogleMap(
-                          mapType: MapType.hybrid,
-                          initialCameraPosition: CameraPosition(
-                            target: widget.userStartLocation,
-                            zoom: 14,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: kBottomNavigationBarHeight),
+                          child: GoogleMap(
+                            mapType: MapType.hybrid,
+                            initialCameraPosition: CameraPosition(
+                              target: widget.userStartLocation,
+                              zoom: 14,
+                            ),
+                            markers: _markers,
+                            onMapCreated: (mapController) {
+                              if (!_controller.isCompleted) {
+                                _controller.complete(mapController);
+                                _displayPolylines(mapController);
+                              }
+                            },
+                            polylines: _polylines,
                           ),
-                          markers: _markers,
-                          onMapCreated: (mapController) {
-                            if (!_controller.isCompleted) {
-                              _controller.complete(mapController);
-                              _displayPolylines(mapController);
-                            }
-                          },
-                          polylines: _polylines,
                         ),
+                      );
+                    },
+                  ),
+                ),
+                // Add other widgets below if needed
+              ],
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0),
+                ),
+                child: BottomNavigationBar(
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, '/map'); // Navigate to the map page
+                        },
+                        child: Icon(Icons.map),
                       ),
-                      Positioned(
-                        bottom: 100.0,
-                        right: 10.0,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.white.withOpacity(0.9),
-                          onPressed: _updateUserLocation,
-                          child: Icon(Icons.my_location, color: Colors.black),
-                        ),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context,
+                              '/schedule'); // Navigate to the Schedule page
+                        },
+                        child: Icon(Icons.schedule),
                       ),
-                    ],
-                  );
-                },
+                      label: 'Schedule',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context,
+                              '/profile'); // Navigate to the Profile page
+                        },
+                        child: Icon(Icons.person),
+                      ),
+                      label: 'Profile',
+                    ),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: Colors.blue,
+                  onTap: _onItemTapped,
+                  elevation: 0, // Remove the shadow
+                ),
               ),
             ),
-          ),
-          // Add other widgets below if needed
-        ],
+            Positioned(
+              right: 10.0,
+              bottom: 165.0,
+              child: FloatingActionButton(
+                backgroundColor: Colors.white.withOpacity(0.7),
+                onPressed: _updateUserLocation,
+                child: const Icon(Icons.my_location, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
