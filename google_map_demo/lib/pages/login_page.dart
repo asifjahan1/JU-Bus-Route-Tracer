@@ -9,7 +9,7 @@ import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -19,12 +19,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthService authService = AuthService();
-  bool _obsecureText = true;
+  bool _obscureText = true;
 
   Future<LocationData> _fetchLocation() async {
     var location = Location();
     LocationData currentLocation = await location.getLocation();
     return currentLocation;
+  }
+
+  void handleLogin(BuildContext context) async {
+    LocationData? currentLocation = await _fetchLocation();
+
+    if (currentLocation != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapPage(
+            userStartLocation: LatLng(
+              currentLocation.latitude!,
+              currentLocation.longitude!,
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Handle location not available
+    }
   }
 
   @override
@@ -78,18 +98,18 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 10),
                   TextField(
                     controller: passwordController,
-                    obscureText: _obsecureText,
+                    obscureText: _obscureText,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock),
                       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                       suffixIcon: GestureDetector(
                         onTap: () {
                           setState(() {
-                            _obsecureText = !_obsecureText;
+                            _obscureText = !_obscureText;
                           });
                         },
                         child: Icon(
-                          _obsecureText
+                          _obscureText
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
@@ -113,25 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
 
                       if (success) {
-                        LocationData? currentLocation = await _fetchLocation();
-
-                        //Navigator.pushReplacementNamed(context, '/map');
-
-                        if (currentLocation != null) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapPage(
-                                userStartLocation: LatLng(
-                                  currentLocation.latitude!,
-                                  currentLocation.longitude!,
-                                ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          // Handle location not available
-                        }
+                        handleLogin(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

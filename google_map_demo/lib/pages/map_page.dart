@@ -3,6 +3,7 @@ import 'dart:math' show atan2, cos, pi, sin, sqrt;
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_map_demo/pages/schedule_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,16 +19,22 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   int _selectedIndex = 0;
+  bool _isLoggedIn = false; // Add this line to track login status
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Map'), // Example widget for the first tab
     Text('Schedule'), // Example widget for the second tab
-    Text('Profile'), // Example widget for the third tab
+    // Text('Profile'), // Example widget for the third tab
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (_selectedIndex == 1) {
+        // Navigate to the SchedulePage when the Schedule icon is tapped
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SchedulePage()));
+      }
     });
   }
 
@@ -445,7 +452,6 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -497,42 +503,19 @@ class _MapPageState extends State<MapPage> {
                   topRight: Radius.circular(15.0),
                 ),
                 child: BottomNavigationBar(
-                  items: <BottomNavigationBarItem>[
+                  items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      icon: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, '/map'); // Navigate to the map page
-                        },
-                        child: Icon(Icons.map),
-                      ),
+                      icon: Icon(Icons.map),
                       label: 'Map',
                     ),
                     BottomNavigationBarItem(
-                      icon: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context,
-                              '/schedule'); // Navigate to the Schedule page
-                        },
-                        child: Icon(Icons.schedule),
-                      ),
+                      icon: Icon(Icons.schedule),
                       label: 'Schedule',
                     ),
-                    // BottomNavigationBarItem(
-                    //   icon: GestureDetector(
-                    //     onTap: () {
-                    //       Navigator.pushNamed(context,
-                    //           '/profile'); // Navigate to the Profile page
-                    //     },
-                    //     child: Icon(Icons.person),
-                    //   ),
-                    //   label: 'Profile',
-                    // ),
                   ],
                   currentIndex: _selectedIndex,
                   selectedItemColor: Colors.blue,
                   onTap: _onItemTapped,
-                  elevation: 0, // Remove the shadow
                 ),
               ),
             ),
