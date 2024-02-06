@@ -464,9 +464,11 @@ class _MapPageState extends State<MapPage> {
                     builder:
                         (BuildContext context, BoxConstraints constraints) {
                       double mapHeight = MediaQuery.of(context).size.height;
+                      double mapWidth = MediaQuery.of(context).size.width;
 
                       return SizedBox(
                         height: mapHeight,
+                        width: mapWidth,
                         child: Padding(
                           padding: const EdgeInsets.only(
                               bottom: kBottomNavigationBarHeight),

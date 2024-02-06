@@ -43,13 +43,13 @@ class _SchedulePageState extends State<SchedulePage> {
     DateTime now = DateTime.now();
     if (now.isAfter(_friday7PM)) {
       _nextDepartureTime = _getNextFriday(DateTime(7, 0));
-      _departureType = 'Next departure: Friday 7:00 AM';
+      _departureType = 'Bus departure: Friday 7:00 AM';
     } else if (now.isAfter(_friday7AM)) {
       _nextDepartureTime = _friday7PM;
       _departureType = 'Next departure: Friday 7:00 PM';
     } else {
       _nextDepartureTime = _friday7AM;
-      _departureType = 'Next departure: Friday 7:00 AM';
+      _departureType = 'Bus departure: Friday 7:00 AM';
     }
   }
 
