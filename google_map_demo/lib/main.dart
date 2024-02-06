@@ -96,11 +96,12 @@ class MyApp extends StatelessWidget {
       // home: const welcomeScreen(),
       initialRoute: '/', // Set initial route to '/'
       routes: {
-        '/': (context) => welcomeScreen(), // Define route for welcome screen
+        '/': (context) =>
+            const welcomeScreen(), // Define route for welcome screen
         '/map': (context) => MapPage(
             userStartLocation: LatLng(0.0, 0.0)), // Define route for map page
         '/schedule': (context) =>
-            SchedulePage(), // Define route for SchedulePage
+            const SchedulePage(), // Define route for SchedulePage
       },
     );
   }
