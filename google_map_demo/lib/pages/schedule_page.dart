@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({Key? key}) : super(key: key);
@@ -10,13 +11,17 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   late Timer _timer;
-  late DateTime _departureTime;
-  String _timeUntilDeparture = '';
+  late DateTime _nextDepartureTime;
+  late String _departureType;
+  late DateTime _friday7AM;
+  late DateTime _friday7PM;
 
   @override
   void initState() {
     super.initState();
-    _departureTime = _getNextDepartureTime();
+    _friday7AM = _getNextFriday(DateTime(7, 0));
+    _friday7PM = _getNextFriday(DateTime(19, 0));
+    _updateDepartureTime();
     _startTimer();
   }
 
@@ -29,21 +34,30 @@ class _SchedulePageState extends State<SchedulePage> {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        _timeUntilDeparture =
-            _formatDuration(_departureTime.difference(DateTime.now()));
+        _updateDepartureTime();
       });
     });
   }
 
-  DateTime _getNextDepartureTime() {
-    // Implement your logic to determine the next departure time based on the current day and scheduled departure time
-    // For demonstration purposes, let's set a fixed departure time at 7:00 AM
+  void _updateDepartureTime() {
     DateTime now = DateTime.now();
-    DateTime departureTime = DateTime(now.year, now.month, now.day, 7, 0, 0);
-    if (now.isAfter(departureTime)) {
-      departureTime = departureTime.add(const Duration(days: 1)); // Next day
+    if (now.isAfter(_friday7PM)) {
+      _nextDepartureTime = _getNextFriday(DateTime(7, 0));
+      _departureType = 'Next departure: Friday 7:00 AM';
+    } else if (now.isAfter(_friday7AM)) {
+      _nextDepartureTime = _friday7PM;
+      _departureType = 'Next departure: Friday 7:00 PM';
+    } else {
+      _nextDepartureTime = _friday7AM;
+      _departureType = 'Next departure: Friday 7:00 AM';
     }
-    return departureTime;
+  }
+
+  DateTime _getNextFriday(DateTime time) {
+    DateTime today = DateTime.now();
+    int daysUntilNextFriday = (DateTime.friday - today.weekday) % 7;
+    return DateTime(today.year, today.month, today.day + daysUntilNextFriday,
+        time.hour, time.minute);
   }
 
   String _formatDuration(Duration duration) {
@@ -57,37 +71,32 @@ class _SchedulePageState extends State<SchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    Duration remainingTime = _nextDepartureTime.difference(DateTime.now());
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           elevation: 5,
-          title: const Text('Bus Schedule'),
+          title: Text('Bus Schedule', textAlign: TextAlign.center),
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              // Navigate back to the MapPage
-              Navigator.pop(context);
-            },
-          ),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Next Departure: Jahangirnagar University',
+                _departureType,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(
+                height: 20,
+              ),
               Text(
-                _timeUntilDeparture,
+                _formatDuration(remainingTime),
                 style: TextStyle(
                   fontSize: 24,
                   color:
-                      _departureTime.difference(DateTime.now()).inMinutes <= 15
-                          ? Colors.red
-                          : Colors.black,
+                      remainingTime.inMinutes <= 15 ? Colors.red : Colors.black,
                 ),
               ),
             ],
