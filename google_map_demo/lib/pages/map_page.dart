@@ -518,16 +518,16 @@ class _MapPageState extends State<MapPage> {
                       ),
                       label: 'Schedule',
                     ),
-                    BottomNavigationBarItem(
-                      icon: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context,
-                              '/profile'); // Navigate to the Profile page
-                        },
-                        child: Icon(Icons.person),
-                      ),
-                      label: 'Profile',
-                    ),
+                    // BottomNavigationBarItem(
+                    //   icon: GestureDetector(
+                    //     onTap: () {
+                    //       Navigator.pushNamed(context,
+                    //           '/profile'); // Navigate to the Profile page
+                    //     },
+                    //     child: Icon(Icons.person),
+                    //   ),
+                    //   label: 'Profile',
+                    // ),
                   ],
                   currentIndex: _selectedIndex,
                   selectedItemColor: Colors.blue,
