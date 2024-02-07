@@ -13,10 +13,10 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController registrationNoController =
+      TextEditingController();
   final AuthService authService = AuthService();
-  bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -66,51 +66,37 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     SizedBox(height: 15),
-                    // Email field
+                    // ID field
                     TextFormField(
-                      controller: emailController,
+                      controller: idController,
                       decoration: InputDecoration(
-                        hintText: 'Please Enter Email',
-                        prefixIcon: Icon(Icons.email),
+                        hintText: 'Please Enter Full ID',
+                        prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return 'Please enter your ID';
                         }
                         return null;
                       },
                     ),
                     SizedBox(height: 10),
-                    // Password field
+                    // Registration number field
                     TextFormField(
-                      controller: passwordController,
-                      obscureText: _obscureText,
+                      controller: registrationNoController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                          child: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                        ),
+                        hintText: 'Registration Number',
+                        prefixIcon: Icon(Icons.confirmation_number_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        hintText: 'Password',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Please enter your registration number';
                         }
                         return null;
                       },
@@ -124,8 +110,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           bool success = await authService.register(
-                            emailController.text,
-                            passwordController.text,
+                            idController.text,
+                            registrationNoController.text,
                           );
 
                           if (success) {

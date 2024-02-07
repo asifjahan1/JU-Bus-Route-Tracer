@@ -16,35 +16,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController registrationNoController =
+      TextEditingController();
   final AuthService authService = AuthService();
-  bool _obscureText = true;
 
   Future<LocationData> _fetchLocation() async {
     var location = Location();
     LocationData currentLocation = await location.getLocation();
     return currentLocation;
-  }
-
-  void handleLogin(BuildContext context) async {
-    LocationData? currentLocation = await _fetchLocation();
-
-    if (currentLocation != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MapPage(
-            userStartLocation: LatLng(
-              currentLocation.latitude!,
-              currentLocation.longitude!,
-            ),
-          ),
-        ),
-      );
-    } else {
-      // Handle location not available
-    }
   }
 
   @override
@@ -62,7 +42,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const welcomeScreen()));
+              MaterialPageRoute(builder: (context) => const welcomeScreen()),
+            );
           },
         ),
       ),
@@ -75,21 +56,27 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Lottie.asset('images/user-anime.json',
-                      width: 100, height: 100, fit: BoxFit.fill),
+                  Lottie.asset(
+                    'images/user-anime.json',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.fill,
+                  ),
                   SizedBox(
                     height: 15,
                   ),
                   Text(
                     'Welcome Back',
                     style: GoogleFonts.poppins(
-                        fontSize: 34, fontWeight: FontWeight.w700),
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   TextField(
-                    controller: emailController,
+                    controller: idController,
                     decoration: InputDecoration(
-                      hintText: 'Email',
-                      prefixIcon: Icon(Icons.email),
+                      hintText: 'Enter Full ID',
+                      prefixIcon: const Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -97,27 +84,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 10),
                   TextField(
-                    controller: passwordController,
-                    obscureText: _obscureText,
+                    controller: registrationNoController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.confirmation_number_rounded),
                       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
-                        child: Icon(
-                          _obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      hintText: 'Password',
+                      hintText: 'Registration No',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -128,16 +102,33 @@ class _LoginPageState extends State<LoginPage> {
                     minWidth: MediaQuery.of(context).size.width,
                     onPressed: () async {
                       bool success = await authService.login(
-                        emailController.text,
-                        passwordController.text,
+                        idController.text,
+                        registrationNoController.text,
                       );
 
                       if (success) {
-                        handleLogin(context);
+                        LocationData? currentLocation = await _fetchLocation();
+
+                        if (currentLocation != null) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MapPage(
+                                userStartLocation: LatLng(
+                                  currentLocation.latitude!,
+                                  currentLocation.longitude!,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          // Handle location not available
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Email or password incorrect'),
+                            content:
+                                Text('ID or registration number incorrect'),
                           ),
                         );
                       }
