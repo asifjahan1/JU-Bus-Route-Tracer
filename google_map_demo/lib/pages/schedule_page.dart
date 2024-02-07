@@ -95,54 +95,82 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     Duration remainingTime = _nextDepartureTime.difference(DateTime.now());
     String formattedDuration = _formatDuration(remainingTime);
-    return SafeArea(
-      // ignore: deprecated_member_use
+    return Container(
+      color: Colors.white,
       child: WillPopScope(
         onWillPop: () async {
           // Navigate back to the map page
           Navigator.pop(context);
           return false; // Prevent default back navigation
         },
-        child: Scaffold(
-          appBar: AppBar(
-            elevation: 5,
-            title: Text('Bus Schedule'),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                // Navigate back to the map page
-                Navigator.pop(context);
-              },
+        child: Container(
+          color: Colors.white,
+          child: Scaffold(
+            appBar: AppBar(
+              //backgroundColor: Colors.blue,
+              //elevation: 0,
+              title: const Text(
+                'Bus Schedule',
+                style: TextStyle(
+                  //fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.3,
+                ),
+              ),
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  // Navigate back to the map page
+                  Navigator.pop(context);
+                },
+              ),
             ),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  _departureType,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-
-                Text(
-                  _formatDuration(remainingTime),
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: remainingTime.inMinutes <= 15
-                        ? Colors.red
-                        : Colors.black,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    _departureType,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  // const Text(
+                  //   'until',
+                  //   style: TextStyle(
+                  //     color: Colors.deepPurple,
+                  //     fontSize: 25,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15),
+                      child: Text(
+                        _formatDuration(remainingTime),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.height * 0.1,
+                          fontWeight: FontWeight.bold,
+                          color: remainingTime.inMinutes <= 15
+                              ? Colors.red
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
 
-                // RichText(
-                //   text: TextSpan(
-                //     children: _getFormattedTextSpans(formattedDuration),
-                //   ),
-                // ),
-              ],
+                  // RichText(
+                  //   text: TextSpan(
+                  //     children: _getFormattedTextSpans(formattedDuration),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           ),
         ),

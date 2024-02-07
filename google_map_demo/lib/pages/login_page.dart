@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_map_demo/pages/auth_service.dart';
 import 'package:google_map_demo/pages/map_page.dart';
-import 'package:google_map_demo/pages/registration_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -16,15 +15,35 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController registrationNoController =
-      TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final AuthService authService = AuthService();
+  bool _obscureText = true;
 
   Future<LocationData> _fetchLocation() async {
     var location = Location();
     LocationData currentLocation = await location.getLocation();
     return currentLocation;
+  }
+
+  void handleLogin(BuildContext context) async {
+    LocationData? currentLocation = await _fetchLocation();
+
+    if (currentLocation != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapPage(
+            userStartLocation: LatLng(
+              currentLocation.latitude!,
+              currentLocation.longitude!,
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Handle location not available
+    }
   }
 
   @override
@@ -42,8 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const welcomeScreen()),
-            );
+                MaterialPageRoute(builder: (context) => const welcomeScreen()));
           },
         ),
       ),
@@ -56,27 +74,21 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Lottie.asset(
-                    'images/user-anime.json',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.fill,
-                  ),
+                  Lottie.asset('images/user-anime.json',
+                      width: 100, height: 100, fit: BoxFit.fill),
                   SizedBox(
                     height: 15,
                   ),
                   Text(
                     'Welcome Back',
                     style: GoogleFonts.poppins(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w700,
-                    ),
+                        fontSize: 34, fontWeight: FontWeight.w700),
                   ),
                   TextField(
-                    controller: idController,
+                    controller: emailController,
                     decoration: InputDecoration(
-                      hintText: 'Enter Full ID',
-                      prefixIcon: const Icon(Icons.person),
+                      hintText: 'Please Enter Email',
+                      prefixIcon: const Icon(Icons.email),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -84,14 +96,27 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 10),
                   TextField(
-                    controller: registrationNoController,
+                    controller: passwordController,
+                    obscureText: _obscureText,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.confirmation_number_rounded),
+                      prefixIcon: Icon(Icons.lock),
                       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                        child: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      hintText: 'Registration No',
+                      hintText: 'Please Enter Password',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -102,38 +127,21 @@ class _LoginPageState extends State<LoginPage> {
                     minWidth: MediaQuery.of(context).size.width,
                     onPressed: () async {
                       bool success = await authService.login(
-                        idController.text,
-                        registrationNoController.text,
+                        emailController.text,
+                        passwordController.text,
                       );
 
                       if (success) {
-                        LocationData? currentLocation = await _fetchLocation();
-
-                        if (currentLocation != null) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapPage(
-                                userStartLocation: LatLng(
-                                  currentLocation.latitude!,
-                                  currentLocation.longitude!,
-                                ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          // Handle location not available
-                        }
+                        handleLogin(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                                Text('ID or registration number incorrect'),
+                            content: Text('Email or password incorrect'),
                           ),
                         );
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       "Login",
                       textAlign: TextAlign.center,
                       style: TextStyle(

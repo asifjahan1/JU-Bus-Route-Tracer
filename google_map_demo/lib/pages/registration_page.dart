@@ -4,8 +4,6 @@ import 'package:google_map_demo/pages/auth_service.dart';
 import 'package:google_map_demo/pages/login_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -15,38 +13,11 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController registrationController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final AuthService authService = AuthService();
+  bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
-
-  late Database _database;
-
-  @override
-  void initState() {
-    super.initState();
-    _initDatabase();
-  }
-
-  Future<void> _initDatabase() async {
-    _database = await openDatabase(
-      join(await getDatabasesPath(), 'user_database.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          'CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, registration TEXT)',
-        );
-      },
-      version: 1,
-    );
-  }
-
-  Future<void> _insertUser(String id, String registration) async {
-    await _database.insert(
-      'users',
-      {'id': null, 'registration': registration},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +34,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const welcomeScreen()),
-            );
+                MaterialPageRoute(builder: (context) => welcomeScreen()));
           },
         ),
       ),
@@ -96,9 +66,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     SizedBox(height: 15),
+                    SizedBox(height: 15),
                     // ID field
                     TextFormField(
-                      controller: idController,
+                      //controller: idController,
                       decoration: InputDecoration(
                         hintText: 'Please Enter Full ID',
                         prefixIcon: const Icon(Icons.person),
@@ -116,7 +87,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(height: 10),
                     // Registration field
                     TextFormField(
-                      controller: registrationController,
+                      //controller: registrationController,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.confirmation_number),
                         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -132,6 +103,57 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         return null;
                       },
                     ),
+                    const SizedBox(height: 10),
+                    // Email field
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Please Enter Email',
+                        prefixIcon: Icon(Icons.email),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    // Password field
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
+                        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          child: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        hintText: 'Please Enter Password',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+
                     SizedBox(height: 20),
                     MaterialButton(
                       elevation: 5,
@@ -140,16 +162,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       minWidth: MediaQuery.of(context).size.width,
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          await _insertUser(
-                            idController.text,
-                            registrationController.text,
+                          bool success = await authService.register(
+                            emailController.text,
+                            passwordController.text,
                           );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          );
+
+                          if (success) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ),
+                            );
+                          } else {
+                            // Handle registration failure
+                          }
                         }
                       },
                       child: const Text(
