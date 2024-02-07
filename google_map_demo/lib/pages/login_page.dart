@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthService authService = AuthService();
-  bool _obscureText = true;
+  bool _obsecureText = true;
 
   Future<LocationData> _fetchLocation() async {
     var location = Location();
@@ -97,18 +97,18 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 10),
                   TextField(
                     controller: passwordController,
-                    obscureText: _obscureText,
+                    obscureText: _obsecureText,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock),
                       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                       suffixIcon: GestureDetector(
                         onTap: () {
                           setState(() {
-                            _obscureText = !_obscureText;
+                            _obsecureText = !_obsecureText;
                           });
                         },
                         child: Icon(
-                          _obscureText
+                          _obsecureText
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
