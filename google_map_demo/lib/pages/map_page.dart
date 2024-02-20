@@ -414,6 +414,7 @@ class _MapPageState extends State<MapPage> {
       // Use CircularProgressIndicator with valueColor
       return const Center(
         child: CircularProgressIndicator(
+          backgroundColor: Colors.transparent,
           valueColor: AlwaysStoppedAnimation<Color>(
               Colors.red), // Change the color to your preference
         ),
