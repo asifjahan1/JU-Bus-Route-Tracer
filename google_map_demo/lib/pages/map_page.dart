@@ -48,8 +48,7 @@ class _MapPageState extends State<MapPage> {
   Map<String, List<LatLng>> predefinedPolylines = {};
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
-  LatLng endLocation =
-      const LatLng(23.877613, 90.266383); // JU (CSE building location)
+  LatLng endLocation = const LatLng(23.879899, 90.272717); // JU location
 
   double calculateDistance(LatLng start, LatLng end) {
     const double radius = 6371.0; // Earth radius
