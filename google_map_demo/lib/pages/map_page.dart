@@ -46,9 +46,10 @@ class _MapPageState extends State<MapPage> {
 
   List<LatLng> userPolylineCoordinates = [];
   Map<String, List<LatLng>> predefinedPolylines = {};
-  Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
-  LatLng endLocation = const LatLng(23.8799, 90.2727);
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
+  LatLng endLocation =
+      const LatLng(23.877613, 90.266383); // JU (CSE building location)
 
   double calculateDistance(LatLng start, LatLng end) {
     const double radius = 6371.0; // Earth radius
@@ -119,7 +120,7 @@ class _MapPageState extends State<MapPage> {
 
     // Display common markers
     _markers.add(Marker(
-      markerId: MarkerId("User Start Location"),
+      markerId: const MarkerId("User Start Location"),
       position: widget.userStartLocation,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       infoWindow: InfoWindow(
@@ -131,7 +132,7 @@ class _MapPageState extends State<MapPage> {
     ));
 
     _markers.add(Marker(
-      markerId: MarkerId("End point location"),
+      markerId: const MarkerId("End point location"),
       position: endLocation,
     ));
 
@@ -235,7 +236,7 @@ class _MapPageState extends State<MapPage> {
 
     // Display common markers
     _markers.add(Marker(
-      markerId: MarkerId("User Start Location"),
+      markerId: const MarkerId("User Start Location"),
       position: widget.userStartLocation,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       infoWindow: InfoWindow(
@@ -247,7 +248,7 @@ class _MapPageState extends State<MapPage> {
     ));
 
     _markers.add(Marker(
-      markerId: MarkerId("End point location"),
+      markerId: const MarkerId("End point location"),
       position: endLocation,
     ));
 
@@ -297,7 +298,7 @@ class _MapPageState extends State<MapPage> {
 
   // Update user location instantly when clicking the floating action button
   bool _isUpdatingLocation = false;
-  MarkerId userLocationMarkerId = MarkerId("Updated Location");
+  MarkerId userLocationMarkerId = const MarkerId("Updated Location");
 
   Future<void> _updateUserLocation() async {
     if (_isUpdatingLocation) return;
@@ -396,7 +397,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<int> getETA(LatLng startLocation, LatLng endLocation) async {
+  Future getETA(LatLng startLocation, LatLng endLocation) async {
     const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
     final apiUrl = Uri.parse(
       'https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${endLocation.latitude},${endLocation.longitude}&key=$apiKey',
@@ -410,7 +411,13 @@ class _MapPageState extends State<MapPage> {
           data['routes'][0]['legs'][0]['duration']['value'];
       return durationInSeconds;
     } else {
-      throw Exception('Failed to load ETA');
+      // Use CircularProgressIndicator with valueColor
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+              Colors.red), // Change the color to your preference
+        ),
+      );
     }
   }
 
