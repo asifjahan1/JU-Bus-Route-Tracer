@@ -313,7 +313,7 @@ class _MapPageState extends State<MapPage> {
 
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(
-      CameraUpdate.newLatLngZoom(newLocation, 16.0),
+      CameraUpdate.newLatLngZoom(newLocation, 15.49),
     );
 
     // Calculate distance and ETA
