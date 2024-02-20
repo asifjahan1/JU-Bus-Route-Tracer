@@ -102,13 +102,12 @@ class _SchedulePageState extends State<SchedulePage> {
     String formattedDuration = _formatDuration(remainingTime);
     return Container(
       color: Colors.white,
-      child: PopScope(
-        canPop: false,
-        // () async {
-        //   // Navigate back to the map page
-        //   Navigator.pop(context);
-        //   return false; // Prevent default back navigation
-        // },
+      child: WillPopScope(
+        onWillPop: () async {
+          // Navigate back to the map page
+          Navigator.pop(context);
+          return false; // Prevent default back navigation
+        },
         child: Scaffold(
           appBar: AppBar(
             title: const Text(
