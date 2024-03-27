@@ -2,9 +2,13 @@
 
 # <span style="font-size:larger;">Screenshots</span>
 
-<img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/ced67693-a3ba-491d-85fb-b512e62a07df"> <img width="19.8%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/9033f110-a7b5-4fd3-884c-a4fd2f56170c"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/d72b4219-10aa-4e7e-9ab3-a0a7dd534196"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/b70ef2e4-56a0-4e2e-85c7-f048bb52c474"> <img width="19%" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/fbf488b0-65fb-4547-90c8-cd6142ae5cdb">
+| Splash Screen | Registration Page | Login Page |
+|------|-------|-------|
+|<img width="250" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/ced67693-a3ba-491d-85fb-b512e62a07df">|<img width="250" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/9033f110-a7b5-4fd3-884c-a4fd2f56170c">|<img width="250" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/d72b4219-10aa-4e7e-9ab3-a0a7dd534196">|
 
-
+| Map Page | User Location |
+|------|-------|
+<img width="250" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/b70ef2e4-56a0-4e2e-85c7-f048bb52c474">|<img width="250" src="https://github.com/asifjahan1/JU-Bus-Route-Tracer/assets/54774661/fbf488b0-65fb-4547-90c8-cd6142ae5cdb">|
 
 # Overview:
 Develop a dynamic and user-friendly mobile application that helps users plan and visualize routes on a map. The app integrates real-time location tracking, predefined routes, and estimated time of arrival (ETA) information to enhance the user experience.
