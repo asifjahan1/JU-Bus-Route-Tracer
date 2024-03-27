@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_map_demo/pages/login_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:google_map_demo/shared_preference.dart';
 //import 'package:flutter/src/services/asset_manifest.dart';
 
+// ignore: camel_case_types
 class splashScreen extends StatefulWidget {
   const splashScreen({Key? key}) : super(key: key);
 
@@ -12,6 +14,7 @@ class splashScreen extends StatefulWidget {
   State<splashScreen> createState() => _splashScreenState();
 }
 
+// ignore: camel_case_types
 class _splashScreenState extends State<splashScreen> {
   final PrefService _prefService = PrefService();
 
@@ -21,11 +24,13 @@ class _splashScreenState extends State<splashScreen> {
 
     // Read cache asynchronously using the _prefService
     _prefService.readCache("email").then((value) {
-      print(value.toString()); // Print the value for debugging purposes
+      if (kDebugMode) {
+        print(value.toString());
+      } // Print the value for debugging purposes
 
       // Use a Timer to delay the navigation for 1 second
       Timer(
-        Duration(seconds: 1),
+        const Duration(seconds: 1),
         () {
           // If the value is not null (user is logged in), navigate to homeRoute
           if (value != null) {
@@ -50,7 +55,7 @@ class _splashScreenState extends State<splashScreen> {
       backgroundColor: Colors.black,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

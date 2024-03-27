@@ -177,7 +177,7 @@ class _MapPageState extends State<MapPage> {
   Future<void> _fetchAndDisplayPredefinedRoute(
       MapEntry<String, LatLng> entry) async {
     await Future.delayed(
-      Duration(
+      const Duration(
         milliseconds: 100,
       ),
     ); // Add a delay of 100 milisecond
@@ -209,7 +209,7 @@ class _MapPageState extends State<MapPage> {
     // Display user's route
     _polylines.add(
       Polyline(
-        polylineId: PolylineId('user_route'),
+        polylineId: const PolylineId('user_route'),
         points: userPolylineCoordinates,
         color: Colors.red,
         width: 7,
@@ -255,7 +255,7 @@ class _MapPageState extends State<MapPage> {
     //controller.showMarkerInfoWindow(MarkerId("User Start Location"));
 
     // Animate the camera position to the user's location after a delay
-    Future.delayed(Duration(milliseconds: 100), () async {
+    Future.delayed(const Duration(milliseconds: 100), () async {
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(
         CameraUpdate.newLatLng(widget.userStartLocation),
@@ -335,10 +335,28 @@ class _MapPageState extends State<MapPage> {
       ),
     );
 
+    final Set<Circle> _circles = {}; // Define _circles set
+
     // Update the user location marker in the set of markers
+    // Inside _updateUserLocation method
     _markers.removeWhere(
-        (marker) => marker.markerId == MarkerId("Updated Location"));
-    //_markers.add(userLocationMarker); //eita off korar pore amar current location er moddhe arekta marker add hobe na.
+        (marker) => marker.markerId == const MarkerId("Updated Location"));
+    // nicher liner er code comment kora chilo withdraw korechi
+    _markers.add(
+        userLocationMarker); //eita off korar pore amar current location er moddhe arekta marker add hobe na.
+    _circles.clear(); // Clear previous circles
+
+    _circles.add(
+      Circle(
+        circleId: const CircleId("User Location"),
+        center: newLocation, // Use the user's current location here
+        radius: 100, // Adjust the radius to your preference
+        fillColor:
+            Colors.blue.withOpacity(0.5), // Set the fill color and opacity
+        strokeColor: Colors.blue, // Set the stroke color
+        strokeWidth: 2, // Set the stroke width
+      ),
+    );
 
     setState(() {});
 
