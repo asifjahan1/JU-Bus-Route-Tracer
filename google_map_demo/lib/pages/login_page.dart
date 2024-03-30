@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios_new,
             color: Colors.black,
             size: 30,
@@ -76,14 +76,15 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Lottie.asset('images/user-anime.json',
                       width: 100, height: 100, fit: BoxFit.fill),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Text(
-                    'Welcome Back',
+                    'Welcome Back!',
                     style: GoogleFonts.poppins(
                         fontSize: 34, fontWeight: FontWeight.w700),
                   ),
+                  const SizedBox(height: 30),
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
@@ -94,13 +95,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: passwordController,
                     obscureText: _obsecureText,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      prefixIcon: const Icon(Icons.lock),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
                       suffixIcon: GestureDetector(
                         onTap: () {
                           setState(() {
@@ -123,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                   MaterialButton(
                     elevation: 5,
                     color: Colors.deepPurple,
-                    padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                    padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
                     minWidth: MediaQuery.of(context).size.width,
                     onPressed: () async {
                       bool success = await authService.login(
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                         handleLogin(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Email or password incorrect'),
                           ),
                         );
