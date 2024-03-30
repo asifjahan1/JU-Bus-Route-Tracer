@@ -566,21 +566,21 @@ class _MapPageState extends State<MapPage> {
           context: context,
           builder: (context) => AlertDialog(
             //backgroundColor: Colors.white.withOpacity(0.5),
-            title: Text(
+            title: const Text(
               'Exit the Map?',
               style: TextStyle(color: Colors.green),
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(
+                child: const Text(
                   'No',
                   style: TextStyle(color: Colors.black, fontSize: 20),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
+                child: const Text(
                   'Yes',
                   style: TextStyle(color: Colors.red, fontSize: 20),
                 ),

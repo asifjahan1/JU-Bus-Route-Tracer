@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "954100295518",
-    "project_id": "map-demo-c4c2c",
-    "storage_bucket": "map-demo-c4c2c.appspot.com"
+    "project_number": "6854240262",
+    "project_id": "map-demo-cc20f",
+    "storage_bucket": "map-demo-cc20f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:954100295518:android:b77f999046b54a0472d1cf",
+        "mobilesdk_app_id": "1:6854240262:android:305438fa96de3281db3b87",
         "android_client_info": {
           "package_name": "com.example.google_map_demo"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD-nDUDpLtZ2FbMBnWJP8yuYnwUuuDoIyU"
+          "current_key": "AIzaSyDUExg_NaoubFdbsIz2xz325H4CK0mND8A"
         }
       ],
       "services": {

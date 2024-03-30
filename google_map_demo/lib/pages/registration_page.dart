@@ -27,170 +27,186 @@ class _RegistrationPageState extends State<RegistrationPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios_new,
             color: Colors.black,
             size: 30,
           ),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => welcomeScreen()));
+                MaterialPageRoute(builder: (context) => const welcomeScreen()));
           },
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset(
-                      'images/sign-up.json',
-                      width: 140,
-                      height: 140,
+      body: Flexible(
+        child: Container(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'images/sign-up.json',
+                    width: 140,
+                    height: 140,
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    'Registration',
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
                     ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Text(
-                      'Registration',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 34,
-                        fontWeight: FontWeight.w700,
+                  ),
+                  const SizedBox(height: 30),
+                  // ID field
+                  TextFormField(
+                    //controller: idController,
+                    decoration: InputDecoration(
+                      hintText: 'Please Enter Full ID',
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    SizedBox(height: 15),
-                    SizedBox(height: 15),
-                    // ID field
-                    TextFormField(
-                      //controller: idController,
-                      decoration: InputDecoration(
-                        hintText: 'Please Enter Full ID',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your ID';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Registration field
+                  TextFormField(
+                    //controller: registrationController,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.confirmation_number),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your ID';
-                        }
-                        return null;
-                      },
+                      hintText: 'Registration No',
                     ),
-                    SizedBox(height: 10),
-                    // Registration field
-                    TextFormField(
-                      //controller: registrationController,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.confirmation_number),
-                        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        hintText: 'Registration No',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your registration number';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    // Email field
-                    TextFormField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        hintText: 'Please Enter Email',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    // Password field
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                          child: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        hintText: 'Please Enter Password',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your registration number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
 
-                    SizedBox(height: 20),
-                    MaterialButton(
-                      elevation: 5,
-                      color: Colors.green,
-                      padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                      minWidth: MediaQuery.of(context).size.width,
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          bool success = await authService.register(
-                            emailController.text,
-                            passwordController.text,
+                  // Email field
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      hintText: 'Please Enter Email',
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Password field
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: _obscureText,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                        child: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      hintText: 'Please Enter Password',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                  MaterialButton(
+                    elevation: 5,
+                    color: Colors.green,
+                    padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                    minWidth: MediaQuery.of(context).size.width,
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        bool success = await authService.register(
+                          emailController.text,
+                          passwordController.text,
+                        );
+
+                        if (success) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
                           );
-
-                          if (success) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginPage(),
-                              ),
-                            );
-                          } else {
-                            // Handle registration failure
-                          }
+                        } else {
+                          // Handle registration failure
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Registration Failed"),
+                                content: const Text(
+                                    "Failed to register user. Please try again."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         }
-                      },
-                      child: const Text(
-                        "SignUp",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      }
+                    },
+                    child: const Text(
+                      "SignUp",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
