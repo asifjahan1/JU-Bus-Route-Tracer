@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_map_demo/pages/auth_service.dart';
+import 'package:google_map_demo/pages/forgot_password.dart';
 import 'package:google_map_demo/pages/map_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -151,6 +152,14 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ForgotPassword()));
+                    },
+                    child: const Text("Forgot Password?"),
                   ),
                 ],
               ),
