@@ -108,7 +108,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 resetPassword(emailController.text);
               },
               child: const Text(
-                'Reset Password',
+                'Get Link',
                 style: TextStyle(color: Colors.white),
               ),
             ),
