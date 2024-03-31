@@ -6,12 +6,21 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_map_demo/pages/schedule_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
+final userStartLocationProvider = riverpod.Provider<LatLng>((ref) {
+  // You can provide initial location here or fetch from other providers
+  return const LatLng(0, 0);
+});
+
+final isLoggedInProvider = riverpod.StateProvider<bool>((ref) => false);
 
 class MapPage extends StatefulWidget {
   final LatLng userStartLocation;
 
-  MapPage({Key? key, required this.userStartLocation}) : super(key: key);
+  const MapPage({Key? key, required this.userStartLocation}) : super(key: key);
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -19,7 +28,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   int _selectedIndex = 0;
-  bool _isLoggedIn = false; // Add this line to track login status
+  final bool _isLoggedIn = false; // Added this line to track login status
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Map'), // Example widget for the first tab
@@ -32,8 +41,8 @@ class _MapPageState extends State<MapPage> {
       _selectedIndex = index;
       if (_selectedIndex == 1) {
         // Navigate to the SchedulePage when the Schedule icon is tapped
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SchedulePage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SchedulePage()));
       }
     });
   }
@@ -77,10 +86,17 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    _getPolyline();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialize();
+    });
   }
 
-  Future<void> _getPolyline() async {
+  void _initialize() {
+    final userStartLocation = widget.userStartLocation;
+    _getPolyline(userStartLocation);
+  }
+
+  Future<void> _getPolyline(LatLng userStartLocation) async {
     const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
 
     // User's route
@@ -180,7 +196,7 @@ class _MapPageState extends State<MapPage> {
       const Duration(
         milliseconds: 100,
       ),
-    ); // Add a delay of 100 milisecond
+    );
 
     const apiKey = 'AIzaSyDNToFfTa1a7WqcxS1PlC382Oem1MpHeHA';
 
@@ -477,6 +493,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    // final LatLng userStartLocation = context.read(userStartLocationProvider).value;
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
