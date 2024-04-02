@@ -105,30 +105,37 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 style: TextStyle(
                   color: Colors.deepPurple,
                   fontWeight: FontWeight.bold,
+                  fontSize: 25,
                 ),
               ),
-              const SizedBox(height: 30),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: 'Please Enter Email',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    hintText: 'Please Enter Email',
+                    prefixIcon: const Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              MaterialButton(
-                color: Colors.deepPurple,
-                padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                minWidth: MediaQuery.of(context).size.width,
-                onPressed: () {
-                  resetPassword(emailController.text);
-                },
-                child: const Text(
-                  'Get Link',
-                  style: TextStyle(color: Colors.white),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: MaterialButton(
+                  color: Colors.deepPurple,
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  minWidth: MediaQuery.of(context).size.width,
+                  onPressed: () {
+                    resetPassword(emailController.text);
+                  },
+                  child: const Text(
+                    'Get Link',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
