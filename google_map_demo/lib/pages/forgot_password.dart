@@ -115,7 +115,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   controller: emailController,
                   decoration: InputDecoration(
                     hintText: 'Please Enter Email',
-                    prefixIcon: const Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email, color: Colors.black54),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

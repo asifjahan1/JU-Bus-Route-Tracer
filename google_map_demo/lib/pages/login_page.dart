@@ -90,7 +90,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: emailController,
                     decoration: InputDecoration(
                       hintText: 'Please Enter Email',
-                      prefixIcon: const Icon(Icons.email),
+                      prefixIcon:
+                          const Icon(Icons.email, color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -101,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     obscureText: _obsecureText,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock, color: Colors.black54),
                       contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
                       suffixIcon: GestureDetector(
                         onTap: () {
