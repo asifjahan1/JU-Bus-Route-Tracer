@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_map_demo/pages/login_page.dart';
+import 'package:lottie/lottie.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -68,11 +69,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text(
-            'Reset Password',
-            style: TextStyle(
-                color: Colors.deepPurple, fontWeight: FontWeight.bold),
-          ),
+          // title: const Text(
+          //   'Reset Password',
+          //   style: TextStyle(
+          //       color: Colors.deepPurple, fontWeight: FontWeight.bold),
+          // ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -93,6 +94,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Lottie.asset(
+                'images/reset-password.json',
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+              ),
+              const Text(
+                'Reset Password',
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 30),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
