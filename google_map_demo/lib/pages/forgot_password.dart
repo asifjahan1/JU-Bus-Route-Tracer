@@ -122,7 +122,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: MaterialButton(
@@ -132,6 +132,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   onPressed: () {
                     resetPassword(emailController.text);
                   },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5, // Add shadow effect
                   child: const Text(
                     'Get Link',
                     style: TextStyle(color: Colors.white),

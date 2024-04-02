@@ -143,6 +143,10 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                     },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          10), // Adjust the radius as needed
+                    ),
                     child: const Text(
                       "Login",
                       textAlign: TextAlign.center,
