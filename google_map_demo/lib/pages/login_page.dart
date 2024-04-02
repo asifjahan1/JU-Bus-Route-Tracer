@@ -144,8 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     },
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          10), // Adjust the radius as needed
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Text(
                       "Login",

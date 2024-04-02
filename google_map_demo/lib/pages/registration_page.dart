@@ -244,6 +244,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             }
                           }
                         },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: const Text(
                           "SignUp",
                           textAlign: TextAlign.center,
