@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_map_demo/pages/auth_service.dart';
 import 'package:google_map_demo/pages/forgot_password.dart';
 import 'package:google_map_demo/pages/map_page.dart';
+import 'package:google_map_demo/pages/registration_page.dart';
 import 'package:google_map_demo/pages/welcome_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -122,7 +125,22 @@ class _LoginPageState extends State<LoginPage> {
                       hintText: 'Please Enter Password',
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const ForgotPassword()));
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
                   MaterialButton(
                     elevation: 5,
                     color: Colors.deepPurple,
@@ -160,10 +178,33 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const ForgotPassword()));
+                      if (mounted) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const RegistrationPage()));
+                      }
                     },
-                    child: const Text("Forgot Password?"),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            color: Colors.black, // Default text color
+                            fontSize: 16, // Default font size
+                          ),
+                          children: [
+                            TextSpan(
+                              text: ' Create a new account!',
+                              style: TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                // decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
