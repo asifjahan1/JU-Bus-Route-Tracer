@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                               text: 'Create new account!',
                               style: TextStyle(
                                 color: Colors.deepPurple,
-                                fontSize: 17,
+                                fontSize: 18.5,
                                 fontWeight: FontWeight.bold,
                                 // decoration: TextDecoration.underline,
                               ),
