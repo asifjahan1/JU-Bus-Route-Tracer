@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           children: [
                             TextSpan(
-                              text: ' Create a new account!',
+                              text: 'Create new account!',
                               style: TextStyle(
                                 color: Colors.deepPurple,
                                 fontSize: 17,
