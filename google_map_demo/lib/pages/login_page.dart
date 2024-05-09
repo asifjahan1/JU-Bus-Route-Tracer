@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const ForgotPassword()));
                         },
                         child: const Text(
-                          "Forgot Password?",
+                          "Forget Password?",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
