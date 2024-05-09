@@ -86,7 +86,10 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'Welcome Back!',
                     style: GoogleFonts.poppins(
-                        fontSize: 34, fontWeight: FontWeight.w700),
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.green,
+                    ),
                   ),
                   const SizedBox(height: 30),
                   TextField(
