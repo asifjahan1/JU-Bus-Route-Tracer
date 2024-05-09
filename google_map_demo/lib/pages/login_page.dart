@@ -191,8 +191,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: RichText(
                         text: const TextSpan(
                           style: TextStyle(
-                            color: Colors.black, // Default text color
-                            fontSize: 16, // Default font size
+                            color: Colors.black,
+                            fontSize: 16,
                           ),
                           children: [
                             TextSpan(

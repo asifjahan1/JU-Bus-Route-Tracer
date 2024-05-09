@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_map_demo/pages/auth_service.dart';
@@ -255,6 +256,39 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Already Have an Account? ',
+                              style: TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 15,
+                                //fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Login!',
+                              style: const TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 18.5,
+                                fontWeight: FontWeight.bold,
+                                //decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const LoginPage(),
+                                    ),
+                                  );
+                                },
+                            ),
+                          ],
                         ),
                       ),
                     ],
